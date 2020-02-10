@@ -26,4 +26,15 @@ class WeatherAdapter () : RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder>
     inner class WeatherViewHolder(view: View) : RecyclerView.ViewHolder(view){
 
     }
+
+    fun updateList(list : ArrayList<WeatherData>){
+        weatherDataList.clear()
+        for(i in list){
+            weatherDataList.add(WeatherData().apply {
+
+            })
+        }
+
+        notifyDataSetChanged()
+    }
 }

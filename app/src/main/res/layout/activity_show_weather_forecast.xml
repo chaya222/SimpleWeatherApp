@@ -4,12 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/ic_background"
     tools:context=".feature.ShowWeatherForecastActivity">
 
     <include
         android:id="@+id/incProgress"
         layout="@layout/activity_show_weather_forecast_progress"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+    <include
+        android:id="@+id/incMainView"
+        layout="@layout/activity_show_weather_forecast_main"
+        android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
