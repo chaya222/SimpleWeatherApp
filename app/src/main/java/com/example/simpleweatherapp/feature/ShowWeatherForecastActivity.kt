@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.core.content.ContextCompat
@@ -14,8 +13,6 @@ import com.example.simpleweatherapp.R
 import com.example.simpleweatherapp.base.BaseActivity
 import com.example.simpleweatherapp.feature.adapter.WeatherAdapter
 import com.example.simpleweatherapp.feature.data.ForecastDay
-import com.example.simpleweatherapp.feature.data.WeatherData
-import com.example.simpleweatherapp.feature.data.WeatherResponse
 import com.example.simpleweatherapp.utils.slideUp
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
@@ -24,13 +21,17 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_show_weather_forecast_main.*
 import android.location.Geocoder
+import android.view.View
 import com.example.simpleweatherapp.utils.makeInVisible
 import com.example.simpleweatherapp.utils.makeVisible
+import kotlinx.android.synthetic.main.activity_show_weather_forcast_error.*
 import kotlinx.android.synthetic.main.activity_show_weather_forecast.*
+import java.lang.Exception
 import java.util.*
 
 
-class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
+class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() , View.OnClickListener {
+
     override fun provideLayout(): Int = R.layout.activity_show_weather_forecast
 
     override fun provideViewModelClass(): Class<WeatherViewModel> = WeatherViewModel::class.java
@@ -48,9 +49,13 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
         initLocationAccess()
         observerForcastAndUpdateUI()
         observerApiState()
-        getViewModel().setLoadingState()
+        setClickListeners()
 
 
+    }
+
+    private fun setClickListeners(){
+        clRetry.setOnClickListener(this)
     }
 
     private fun setTodayTemp(forecastDay: ForecastDay?) {
@@ -67,16 +72,19 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
             if (it.isLoading) {
                 incProgress.makeVisible()
                 incMainView.makeInVisible()
+                incError.makeInVisible()
             }
 
             if (it.isError) {
                 incProgress.makeInVisible()
                 incMainView.makeInVisible()
+                incError.makeVisible()
             }
 
             if (it.showData) {
                 incProgress.makeInVisible()
                 incMainView.makeVisible()
+                incError.makeInVisible()
             }
 
         })
@@ -109,6 +117,7 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
 
     @SuppressLint("CheckResult")
     private fun initLocationAccess() {
+        getViewModel().setLoadingState()
         rxPermissions = RxPermissions(this)
         if ((ContextCompat.checkSelfPermission(
                 this,
@@ -172,7 +181,19 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
 
     private fun setLocalityName(location: Location) {
         val geocoder = Geocoder(this, Locale.getDefault())
-        cityName =
-            geocoder.getFromLocation(location.latitude, location.longitude, 1).get(0).locality
+        try {
+            cityName =
+                geocoder.getFromLocation(location.latitude, location.longitude, 1).get(0).locality
+        }catch (ex:Exception){}
+
     }
+
+    override fun onClick(v: View?) {
+       when(v!!.id){
+           clRetry.id->{
+               initLocationAccess()
+           }
+       }
+    }
+
 }

@@ -11,13 +11,21 @@
         layout="@layout/activity_show_weather_forecast_progress"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"/>
+        android:visibility="invisible"/>
 
     <include
         android:id="@+id/incMainView"
         layout="@layout/activity_show_weather_forecast_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="invisible"/>
+
+    <include
+        android:id="@+id/incError"
+        layout="@layout/activity_show_weather_forcast_error"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

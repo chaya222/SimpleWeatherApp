@@ -13,7 +13,7 @@
         app:layout_constraintBottom_toTopOf="@id/rvWeatherForecast"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.32"
-        android:layoutAnimation="@anim/layout_slide_up_animation">
+        android:layoutAnimation="@anim/layout_slide_right_to_left_animation">
 
         <TextView
             android:id="@+id/tvTodayTemp"
