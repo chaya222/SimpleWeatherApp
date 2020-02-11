@@ -39,21 +39,21 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show_weather_forecast)
 
-        //setRecyclerView()
         initLocationAccess()
-
-        getViewModel().info.observe(this, Observer {
-                it.data.let {
-                    it.weather.let {
-                        if(it.size>6)
-                            setRecyclerView(it.subList(0,7))
-                    }
-
-                }
+        observerForcastAndUpdateUI()
+        observerApiState()
 
 
-        })
+    }
 
+    private fun setTodayTemp(forecastDay: ForecastDay?){
+        forecastDay?.let {
+           tvTodayTemp.text="${it.avgTemp}"
+            tvDegree.text="${(0x00B0).toChar()}"
+        }
+    }
+
+    private fun observerApiState(){
         getViewModel().viewState.observe(this, Observer {
 
             if (it.isLoading) {
@@ -74,6 +74,20 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
         })
     }
 
+    private fun observerForcastAndUpdateUI(){
+        getViewModel().info.observe(this, Observer {
+            it.data.let {
+                it.weather.let {
+                    if(it.size>6)
+                        setRecyclerView(it.subList(0,7))
+                    setTodayTemp(it[0])
+                }
+
+            }
+
+
+        })
+    }
 
     private fun setRecyclerView(it:List<ForecastDay>) {
         val linearLayoutManager = LinearLayoutManager(this)
@@ -81,7 +95,6 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
         rvWeatherForecast.adapter=weatherAdapter
         weatherAdapter.updateList(it)
         rvWeatherForecast.slideUp()
-
 
     }
 
