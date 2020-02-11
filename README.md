@@ -3,7 +3,8 @@
 A project showcasing MVVM, Android Arch. Components,RxJava, Dagger, Retrofit, OkHttp3, Unit and Instrumentation Testing using JUnit and Mockito.
 
 ## Preview
-<img src="NoteApp.gif" width="250" height="480"/> &nbsp;&nbsp;
+<img src="gif_1.gif" width="250" height="480"/> &nbsp;&nbsp;
+<img src="gif_2.gif" width="250" height="480"/> &nbsp;&nbsp;
 
 ## Architecture
 * MVVM with Architecture Components
