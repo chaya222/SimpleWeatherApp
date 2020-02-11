@@ -136,9 +136,14 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() , View.OnCl
                     run {
                         if (granted) {
                             startLocationUpdates()
+                        }else{
+                            incProgress.makeInVisible()
+                            incMainView.makeInVisible()
+                            incError.makeVisible()
                         }
                     }
                 }
+
         } else {
             startLocationUpdates()
         }
