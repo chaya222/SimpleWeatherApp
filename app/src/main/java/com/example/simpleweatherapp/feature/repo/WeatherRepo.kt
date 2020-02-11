@@ -1,7 +1,6 @@
 package com.example.simpleweatherapp.feature.repo
 
 import com.example.simpleweatherapp.api.ApiInterface
-import com.example.simpleweatherapp.feature.data.WeatherData
 import com.example.simpleweatherapp.feature.data.WeatherResponse
 import com.example.simpleweatherapp.utils.AppRxSchedulers
 import com.example.simpleweatherapp.utils.Constants.Companion.WEATHER_API_KEY

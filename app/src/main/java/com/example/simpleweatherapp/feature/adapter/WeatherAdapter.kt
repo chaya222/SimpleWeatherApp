@@ -9,15 +9,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simpleweatherapp.R
 import com.example.simpleweatherapp.feature.data.ForecastDay
-import com.example.simpleweatherapp.feature.data.WeatherData
-import com.example.simpleweatherapp.feature.data.WeatherResponse
 import com.example.simpleweatherapp.utils.makeInVisible
-import com.example.simpleweatherapp.utils.makeVisible
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class WeatherAdapter() : RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder>() {
+class WeatherAdapter : RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder>() {
 
     private var weatherDataList = ArrayList<ForecastDay>()
 
@@ -95,7 +92,8 @@ class WeatherAdapter() : RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder>(
         calendar.add(Calendar.DAY_OF_YEAR, 1)
         val tomorrow = SimpleDateFormat("yyyy-MM-dd").format(calendar.timeInMillis)
 
-        val otherDay = SimpleDateFormat("dd MMM yyyy").format(SimpleDateFormat("yyyy-MM-dd").parse(date))
+        val otherDay =
+            SimpleDateFormat("dd MMM yyyy").format(SimpleDateFormat("yyyy-MM-dd").parse(date))
         return when (date) {
             todayDay -> "Today"
             tomorrow -> "Tomorrow"
