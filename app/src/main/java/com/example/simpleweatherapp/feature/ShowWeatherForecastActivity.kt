@@ -23,6 +23,9 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_show_weather_forecast_main.*
+import android.location.Geocoder
+import java.util.*
+
 
 class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
     override fun provideLayout(): Int = R.layout.activity_show_weather_forecast
@@ -31,9 +34,9 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
 
     private  var weatherAdapter: WeatherAdapter = WeatherAdapter()
     private lateinit var rxPermissions: RxPermissions
-    private var tempLocation: Location? = null
     private var locationReq: LocationRequest? = null
     private var fusedLocationClient: FusedLocationProviderClient? = null
+    private var cityName = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +53,7 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
         forecastDay?.let {
            tvTodayTemp.text="${it.avgTemp}"
             tvDegree.text="${(0x00B0).toChar()}"
+            tvCity.text=cityName
         }
     }
 
@@ -139,9 +143,8 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
         fusedLocationClient?.lastLocation?.addOnSuccessListener { location ->
             if (location != null) {
 
-                tempLocation = location
-
                 getViewModel().getWeatherForecast(location.latitude.toString(), location.longitude.toString())
+                setLocalityName(location)
 
             } else {
                 Log.d("LOCATION", "Location is null")
@@ -150,5 +153,10 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
             Log.d("LOCATION", "Error trying to get last GPS location")
             exp.printStackTrace()
         }
+    }
+
+    private fun setLocalityName(location: Location){
+        val geocoder = Geocoder(this, Locale.getDefault())
+        cityName = geocoder.getFromLocation(location.latitude, location.longitude, 1).get(0).locality
     }
 }

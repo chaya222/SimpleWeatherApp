@@ -89,10 +89,12 @@ class WeatherAdapter() : RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder>(
     }
 
     fun getDayTitle(date: String): String {
-        val calendar = Calendar.getInstance()
+        var calendar = Calendar.getInstance()
         val todayDay = SimpleDateFormat("yyyy-MM-dd").format(calendar.timeInMillis)
-        calendar.add(Calendar.DAY_OF_MONTH, 1)
+
+        calendar.add(Calendar.DAY_OF_YEAR, 1)
         val tomorrow = SimpleDateFormat("yyyy-MM-dd").format(calendar.timeInMillis)
+
         val otherDay = SimpleDateFormat("dd MMM yyyy").format(SimpleDateFormat("yyyy-MM-dd").parse(date))
         return when (date) {
             todayDay -> "Today"
