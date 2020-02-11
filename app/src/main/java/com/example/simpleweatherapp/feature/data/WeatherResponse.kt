@@ -3,23 +3,27 @@ package com.example.simpleweatherapp.feature.data
 import com.google.gson.annotations.SerializedName
 
 data class WeatherResponse(
-    @SerializedName("weather") val forecast: WeatherForecast? = WeatherForecast()
+    @SerializedName("data") val data: Data = Data()
 ) {
+    data class Data(
+        @SerializedName("weather") val weather: List<ForecastDay> = ArrayList()
+    )
+}
 
-    data class WeatherForecast(
-        @SerializedName("forecastday") val forecast: List<ForecastDay> = ArrayList()
-    ){
-        data class ForecastDay(
-            @SerializedName("avgtempC") var avgTemp: String = "",
-            @SerializedName("hourly") val day: List<HourForecast?> = ArrayList()
-        ) {
-            data class HourForecast(
-                @SerializedName("weatherDesc") val weatherDesc: List<WeatherDescription> = ArrayList()
-            )
-        }
+data class ForecastDay(
+    @SerializedName("date") var date : String = "",
+    @SerializedName("avgtempC") var avgTemp: String = "",
+    @SerializedName("hourly") var weatherDescList: List<WeatherDescription> = ArrayList()
+) {
+    data class WeatherDescription(
+        @SerializedName("weatherDesc") var weatherDescValueList: List<WeatherDescriptionValue> = ArrayList()
+    ) {
+        data class WeatherDescriptionValue(
+            @SerializedName("value") val String: String? = ""
+        )
     }
 }
 
-data class WeatherDescription(
-    @SerializedName("value") val String: String? = ""
-)
+
+
+

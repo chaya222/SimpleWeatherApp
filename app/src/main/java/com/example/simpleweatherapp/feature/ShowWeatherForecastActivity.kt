@@ -1,72 +1,141 @@
 package com.example.simpleweatherapp.feature
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.simpleweatherapp.R
+import com.example.simpleweatherapp.base.BaseActivity
 import com.example.simpleweatherapp.feature.adapter.WeatherAdapter
+import com.example.simpleweatherapp.feature.data.ForecastDay
 import com.example.simpleweatherapp.feature.data.WeatherData
+import com.example.simpleweatherapp.feature.data.WeatherResponse
 import com.example.simpleweatherapp.utils.slideUp
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_show_weather_forecast_main.*
 
-class ShowWeatherForecastActivity : AppCompatActivity() {
+class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
+    override fun provideLayout(): Int = R.layout.activity_show_weather_forecast
 
-    private var weatherAdapter: WeatherAdapter = WeatherAdapter()
+    override fun provideViewModelClass(): Class<WeatherViewModel> = WeatherViewModel::class.java
+
+    private  var weatherAdapter: WeatherAdapter = WeatherAdapter()
+    private lateinit var rxPermissions: RxPermissions
+    private var tempLocation: Location? = null
+    private var locationReq: LocationRequest? = null
+    private var fusedLocationClient: FusedLocationProviderClient? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show_weather_forecast)
 
-        setRecyclerView()
+        //setRecyclerView()
+        initLocationAccess()
+
+        getViewModel().info.observe(this, Observer {
+                it.data.let {
+                    it.weather.let {
+                        if(it.size>6)
+                            setRecyclerView(it.subList(0,7))
+                    }
+
+                }
+
+
+        })
+
+        getViewModel().viewState.observe(this, Observer {
+
+            if (it.isLoading) {
+//                progressDialog.show()
+//                errorDialog.dismiss()
+            }
+
+            if (it.isError) {
+//                progressDialog.dismiss()
+//                errorDialog.show()
+            }
+
+            if (it.showData) {
+//                progressDialog.dismiss()
+//                errorDialog.dismiss()
+            }
+
+        })
     }
 
 
-    private fun setRecyclerView() {
-        clickMe.setOnClickListener {
-
-        }
+    private fun setRecyclerView(it:List<ForecastDay>) {
         val linearLayoutManager = LinearLayoutManager(this)
         rvWeatherForecast.layoutManager=linearLayoutManager
         rvWeatherForecast.adapter=weatherAdapter
-        weatherAdapter.updateList(getWeatherList())
+        weatherAdapter.updateList(it)
         rvWeatherForecast.slideUp()
 
 
     }
 
-    private fun getWeatherList() : ArrayList<WeatherData>{
-        val wList = ArrayList<WeatherData>()
 
-        wList.add(WeatherData().apply {
+    @SuppressLint("CheckResult")
+    private fun initLocationAccess() {
+        rxPermissions = RxPermissions(this)
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            rxPermissions
+                .request(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION)
+                .subscribe { granted ->
+                    run {
+                        if (granted) {
+                            startLocationUpdates()
+                        }
+                    }
+                }
+        } else {
+            startLocationUpdates()
+        }
 
-        })
+    }
 
-        wList.add(WeatherData().apply {
 
-        })
+    @SuppressLint("MissingPermission")
+    private fun startLocationUpdates() {
+        locationReq = LocationRequest().apply {
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
 
-        wList.add(WeatherData().apply {
+        val locationSettingsReqBuilder = LocationSettingsRequest.Builder()
+        locationSettingsReqBuilder.addLocationRequest(locationReq!!)
+        val locationSettingsRequest = locationSettingsReqBuilder.build()
 
-        })
+        val settingsClient = LocationServices.getSettingsClient(this)
+        settingsClient.checkLocationSettings(locationSettingsRequest)
 
-        wList.add(WeatherData().apply {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        })
+        fusedLocationClient?.lastLocation?.addOnSuccessListener { location ->
+            if (location != null) {
 
-        wList.add(WeatherData().apply {
+                tempLocation = location
 
-        })
+                getViewModel().getWeatherForecast(location.latitude.toString(), location.longitude.toString())
 
-        wList.add(WeatherData().apply {
-
-        })
-
-        wList.add(WeatherData().apply {
-
-        })
-
-        wList.add(WeatherData().apply {
-
-        })
-        return wList
+            } else {
+                Log.d("LOCATION", "Location is null")
+            }
+        }?.addOnFailureListener { exp ->
+            Log.d("LOCATION", "Error trying to get last GPS location")
+            exp.printStackTrace()
+        }
     }
 }

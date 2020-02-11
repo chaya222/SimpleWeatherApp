@@ -12,7 +12,20 @@ fun View.slideUp() {
         this.height.toFloat(),
         0f
     )
-    animate.duration = 500
+    animate.duration = 300
     animate.fillAfter = true
     this.startAnimation(animate)
+}
+
+
+fun View.makeVisible(){
+      visibility=View.VISIBLE
+}
+
+fun View.makeInVisible(){
+    visibility=View.INVISIBLE
+}
+
+fun View.makeGone(){
+    visibility=View.GONE
 }

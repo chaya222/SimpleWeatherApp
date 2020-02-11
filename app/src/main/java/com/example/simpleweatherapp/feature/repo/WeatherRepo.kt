@@ -16,4 +16,10 @@ class WeatherRepo @Inject constructor(
 ){
 
 
+    fun getWeatherForecast(latitude: String, longitude: String): Single<WeatherResponse> {
+        return api.getWeatherForecast(WEATHER_API_KEY, "$latitude,$longitude", "7","json")
+            .subscribeOn(rxSchedulers.io())
+            .observeOn(rxSchedulers.androidThread())
+    }
+
 }
