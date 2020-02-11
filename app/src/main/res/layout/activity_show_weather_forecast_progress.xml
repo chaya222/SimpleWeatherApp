@@ -8,6 +8,8 @@
         android:id="@+id/progressLoader"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:indeterminateDuration="1000"
+        android:indeterminateBehavior="repeat"
         android:indeterminateDrawable="@drawable/progress_drawable"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

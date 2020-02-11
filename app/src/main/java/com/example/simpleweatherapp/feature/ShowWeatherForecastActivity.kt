@@ -24,6 +24,9 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_show_weather_forecast_main.*
 import android.location.Geocoder
+import com.example.simpleweatherapp.utils.makeInVisible
+import com.example.simpleweatherapp.utils.makeVisible
+import kotlinx.android.synthetic.main.activity_show_weather_forecast.*
 import java.util.*
 
 
@@ -32,7 +35,7 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
 
     override fun provideViewModelClass(): Class<WeatherViewModel> = WeatherViewModel::class.java
 
-    private  var weatherAdapter: WeatherAdapter = WeatherAdapter()
+    private var weatherAdapter: WeatherAdapter = WeatherAdapter()
     private lateinit var rxPermissions: RxPermissions
     private var locationReq: LocationRequest? = null
     private var fusedLocationClient: FusedLocationProviderClient? = null
@@ -45,45 +48,46 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
         initLocationAccess()
         observerForcastAndUpdateUI()
         observerApiState()
+        getViewModel().setLoadingState()
 
 
     }
 
-    private fun setTodayTemp(forecastDay: ForecastDay?){
+    private fun setTodayTemp(forecastDay: ForecastDay?) {
         forecastDay?.let {
-           tvTodayTemp.text="${it.avgTemp}"
-            tvDegree.text="${(0x00B0).toChar()}"
-            tvCity.text=cityName
+            tvTodayTemp.text = "${it.avgTemp}"
+            tvDegree.text = "${(0x00B0).toChar()}"
+            tvCity.text = cityName
         }
     }
 
-    private fun observerApiState(){
+    private fun observerApiState() {
         getViewModel().viewState.observe(this, Observer {
 
             if (it.isLoading) {
-//                progressDialog.show()
-//                errorDialog.dismiss()
+                incProgress.makeVisible()
+                incMainView.makeInVisible()
             }
 
             if (it.isError) {
-//                progressDialog.dismiss()
-//                errorDialog.show()
+                incProgress.makeInVisible()
+                incMainView.makeInVisible()
             }
 
             if (it.showData) {
-//                progressDialog.dismiss()
-//                errorDialog.dismiss()
+                incProgress.makeInVisible()
+                incMainView.makeVisible()
             }
 
         })
     }
 
-    private fun observerForcastAndUpdateUI(){
+    private fun observerForcastAndUpdateUI() {
         getViewModel().info.observe(this, Observer {
             it.data.let {
                 it.weather.let {
-                    if(it.size>6)
-                        setRecyclerView(it.subList(0,7))
+                    if (it.size > 6)
+                        setRecyclerView(it.subList(0, 7))
                     setTodayTemp(it[0])
                 }
 
@@ -93,10 +97,10 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
         })
     }
 
-    private fun setRecyclerView(it:List<ForecastDay>) {
+    private fun setRecyclerView(it: List<ForecastDay>) {
         val linearLayoutManager = LinearLayoutManager(this)
-        rvWeatherForecast.layoutManager=linearLayoutManager
-        rvWeatherForecast.adapter=weatherAdapter
+        rvWeatherForecast.layoutManager = linearLayoutManager
+        rvWeatherForecast.adapter = weatherAdapter
         weatherAdapter.updateList(it)
         rvWeatherForecast.slideUp()
 
@@ -106,11 +110,19 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
     @SuppressLint("CheckResult")
     private fun initLocationAccess() {
         rxPermissions = RxPermissions(this)
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+        if ((ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED)
+        ) {
             rxPermissions
                 .request(
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION)
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
                 .subscribe { granted ->
                     run {
                         if (granted) {
@@ -143,7 +155,10 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
         fusedLocationClient?.lastLocation?.addOnSuccessListener { location ->
             if (location != null) {
 
-                getViewModel().getWeatherForecast(location.latitude.toString(), location.longitude.toString())
+                getViewModel().getWeatherForecast(
+                    location.latitude.toString(),
+                    location.longitude.toString()
+                )
                 setLocalityName(location)
 
             } else {
@@ -155,8 +170,9 @@ class ShowWeatherForecastActivity : BaseActivity<WeatherViewModel>() {
         }
     }
 
-    private fun setLocalityName(location: Location){
+    private fun setLocalityName(location: Location) {
         val geocoder = Geocoder(this, Locale.getDefault())
-        cityName = geocoder.getFromLocation(location.latitude, location.longitude, 1).get(0).locality
+        cityName =
+            geocoder.getFromLocation(location.latitude, location.longitude, 1).get(0).locality
     }
 }
