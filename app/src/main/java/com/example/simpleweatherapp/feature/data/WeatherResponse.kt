@@ -13,13 +13,14 @@ data class WeatherResponse(
 data class ForecastDay(
     @SerializedName("date") var date : String = "",
     @SerializedName("avgtempC") var avgTemp: String = "",
+    @SerializedName("maxtempC") var maxTemp: String = "",
     @SerializedName("hourly") var weatherDescList: List<WeatherDescription> = ArrayList()
 ) {
     data class WeatherDescription(
         @SerializedName("weatherDesc") var weatherDescValueList: List<WeatherDescriptionValue> = ArrayList()
     ) {
         data class WeatherDescriptionValue(
-            @SerializedName("value") val String: String? = ""
+            @SerializedName("value") val value : String? = ""
         )
     }
 }

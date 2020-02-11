@@ -12,7 +12,7 @@ fun View.slideUp() {
         this.height.toFloat(),
         0f
     )
-    animate.duration = 300
+    animate.duration = 500
     animate.fillAfter = true
     this.startAnimation(animate)
 }
