@@ -93,10 +93,11 @@ class WeatherAdapter() : RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder>(
         val todayDay = SimpleDateFormat("yyyy-MM-dd").format(calendar.timeInMillis)
         calendar.add(Calendar.DAY_OF_MONTH, 1)
         val tomorrow = SimpleDateFormat("yyyy-MM-dd").format(calendar.timeInMillis)
+        val otherDay = SimpleDateFormat("dd MMM yyyy").format(SimpleDateFormat("yyyy-MM-dd").parse(date))
         return when (date) {
             todayDay -> "Today"
             tomorrow -> "Tomorrow"
-            else -> date
+            else -> otherDay
         }
     }
 
